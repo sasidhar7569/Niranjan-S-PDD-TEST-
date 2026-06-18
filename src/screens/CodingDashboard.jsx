@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Code2, AlertCircle, Building2 } from 'lucide-react';
 
-const companiesData = [
+export const companiesData = [
   {
     name: 'Apple',
     domain: 'apple.com',
@@ -114,8 +114,42 @@ const companiesData = [
 
 const CodingDashboard = () => {
   const userName = localStorage.getItem('userName') || 'John';
+  const [filteredCompaniesData, setFilteredCompaniesData] = useState(companiesData);
   const [activeCompanyObj, setActiveCompanyObj] = useState(companiesData[0]);
   const [completedTopics, setCompletedTopics] = useState({});
+
+  useEffect(() => {
+    const loadTargets = () => {
+      const saved = localStorage.getItem('targetCompanies');
+      let targets = [];
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            targets = parsed;
+          }
+        } catch (e) {}
+      }
+      
+      if (targets.length > 0) {
+        const filtered = companiesData.filter(c => targets.includes(c.name));
+        if (filtered.length > 0) {
+          setFilteredCompaniesData(filtered);
+          setActiveCompanyObj(prev => {
+            if (filtered.find(f => f.name === prev?.name)) return prev;
+            return filtered[0];
+          });
+        } else {
+          setFilteredCompaniesData([]);
+        }
+      } else {
+        setFilteredCompaniesData([]);
+      }
+    };
+    loadTargets();
+    window.addEventListener('targetCompaniesUpdated', loadTargets);
+    return () => window.removeEventListener('targetCompaniesUpdated', loadTargets);
+  }, []);
 
   // Load progress for specific user and company
   useEffect(() => {
@@ -152,6 +186,22 @@ const CodingDashboard = () => {
     return `https://logo.clearbit.com/${domain}`;
   };
 
+  if (!activeCompanyObj) {
+    return (
+      <div className="page-container">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-textMain mb-2">Company-Wise Topics Preparation</h1>
+          <p className="text-secondary text-lg">Track your preparation progress for specific target companies.</p>
+        </div>
+        <div className="card text-center py-16 flex flex-col items-center border-dashed border-2 border-slate-700 bg-transparent">
+          <Building2 size={64} className="text-slate-600 mb-6" />
+          <h2 className="text-2xl font-bold mb-3">No Target Companies Selected</h2>
+          <p className="text-secondary max-w-md">You haven't selected any dream companies yet. Please update your profile to see tailored preparation paths.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="mb-8">
@@ -162,7 +212,7 @@ const CodingDashboard = () => {
       {/* Company Selector */}
       <div className="mb-8">
         <div className="flex gap-3 w-full overflow-x-auto hide-scrollbar pb-2">
-          {companiesData.map(company => (
+          {filteredCompaniesData.map(company => (
             <button 
               key={company.name}
               className={`px-4 py-3 rounded-xl font-bold flex items-center gap-3 transition-all flex-shrink-0 ${

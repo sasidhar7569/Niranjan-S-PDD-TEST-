@@ -144,7 +144,10 @@ const SetupWizard = () => {
               <button className="btn-outline flex-1 py-3" onClick={() => setStep(2)}>Back</button>
               <button 
                 className="btn-primary flex-1 py-3" 
-                onClick={() => setStep(4)}
+                onClick={() => {
+                  localStorage.setItem('targetCompanies', JSON.stringify(selectedCompanies));
+                  setStep(4);
+                }}
                 disabled={selectedCompanies.length === 0}
                 style={{ opacity: selectedCompanies.length === 0 ? 0.5 : 1 }}
               >

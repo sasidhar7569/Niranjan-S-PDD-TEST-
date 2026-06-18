@@ -8,7 +8,6 @@ const CareerTools = () => {
   const tools = [
     { id: 'resume', title: 'Resume Builder', desc: 'Create ATS-friendly resumes from scratch or use templates.', icon: FileText, color: '#f59e0b', action: 'Build Resume', path: '/career-tools/resume-builder' },
     { id: 'ats', title: 'ATS Score Checker', desc: 'Upload your resume and a JD to get a compatibility score.', icon: Search, color: '#8b5cf6', action: 'Check Score', path: '/career-tools/ats-checker' },
-    { id: 'hr', title: 'HR Interview Prep', desc: 'Practice top behavioral questions with AI feedback.', icon: Briefcase, color: '#10b981', action: 'Start Practicing', path: '/preparation' },
   ];
 
   return (
@@ -39,7 +38,7 @@ const CareerTools = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         <div className="card bg-gradient-to-br from-indigo-50 to-blue-50 border-primary/30">
           <div className="flex justify-between items-start mb-6">
             <div>
@@ -58,32 +57,7 @@ const CareerTools = () => {
           </div>
         </div>
 
-        <div className="card">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg">Resume Templates</h3>
-            <button className="text-primary text-sm font-semibold hover:underline">View All</button>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="border rounded-lg overflow-hidden group cursor-pointer">
-              <div className="h-40 bg-slate-700 flex items-center justify-center relative">
-                <FileText size={48} className="text-gray-300" />
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="bg-slate-800/50 text-textMain px-4 py-2 rounded font-semibold text-sm">Use Template</span>
-                </div>
-              </div>
-              <div className="p-3 bg-slate-800/50 text-center font-medium text-sm border-t">Modern Classic</div>
-            </div>
-            <div className="border rounded-lg overflow-hidden group cursor-pointer">
-              <div className="h-40 bg-slate-700 flex items-center justify-center relative">
-                <FileText size={48} className="text-gray-300" />
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="bg-slate-800/50 text-textMain px-4 py-2 rounded font-semibold text-sm">Use Template</span>
-                </div>
-              </div>
-              <div className="p-3 bg-slate-800/50 text-center font-medium text-sm border-t">Tech Focused</div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );

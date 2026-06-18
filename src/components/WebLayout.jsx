@@ -17,9 +17,17 @@ const WebLayout = () => {
 
       const fName = localStorage.getItem('firstName');
       const lName = localStorage.getItem('lastName');
-      if (fName && lName) {
-        setInitials(`${fName[0]}${lName[0]}`.toUpperCase());
+      const uName = localStorage.getItem('userName');
+      
+      let init = '';
+      if (fName) {
+        init = fName[0];
+      } else if (uName) {
+        const parts = uName.trim().split(' ');
+        if (parts.length > 0 && parts[0]) init = parts[0][0];
       }
+      
+      setInitials(init ? init.toUpperCase() : 'U');
     };
 
     // Initial load
@@ -31,7 +39,7 @@ const WebLayout = () => {
   }, []);
   
   // Hide TopBar and BottomNav for intensive screens like Active Test or Code Editor
-  const isFullScreenMode = location.pathname.includes('/tests/active') || location.pathname.includes('/coding/editor');
+  const isFullScreenMode = location.pathname.includes('/coding/editor');
 
   if (isFullScreenMode) {
     return <Outlet />;
@@ -43,7 +51,6 @@ const WebLayout = () => {
     if (path.includes('/home')) return 'Dashboard';
     if (path.includes('/preparation')) return 'Preparation';
     if (path.includes('/coding')) return 'Topics Preparation';
-    if (path.includes('/tests')) return 'Mock Tests';
     if (path.includes('/companies')) return 'Company Prep';
     if (path.includes('/roadmap')) return 'Roadmaps';
     if (path.includes('/career-tools')) return 'Career Tools';

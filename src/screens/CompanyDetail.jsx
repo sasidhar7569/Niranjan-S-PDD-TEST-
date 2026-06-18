@@ -122,9 +122,6 @@ const CompanyDetail = () => {
               <span className="flex items-center gap-1 bg-slate-800 px-3 py-1 rounded-full"><Building size={14} /> {company.industry}</span>
             </div>
           </div>
-          <button className="btn-primary" onClick={() => navigate(`/tests?company=${id}`)}>
-            Take Mock Test
-          </button>
         </div>
       </div>
 

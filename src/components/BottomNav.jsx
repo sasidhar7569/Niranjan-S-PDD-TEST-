@@ -7,7 +7,6 @@ const BottomNav = () => {
     { path: '/home', icon: Home, label: 'Home' },
     { path: '/preparation', icon: BookOpen, label: 'Prep' },
     { path: '/roadmap', icon: Briefcase, label: 'Roadmap' },
-    { path: '/tests', icon: PenTool, label: 'Tests' },
     { path: '/profile', icon: User, label: 'Profile' }
   ];
 

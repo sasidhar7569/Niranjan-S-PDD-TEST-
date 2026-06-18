@@ -45,8 +45,12 @@ describe('Deployable Status', function() {
         // Submit Register
         const submitBtn = await global.driver.findElement(By.xpath('//button[contains(text(), "Sign Up")]'));
         await submitBtn.click();
-        await global.driver.sleep(1000);
-        await dismissAlerts(); // Dismiss "Registration successful" alert
+        try {
+            await global.driver.wait(until.alertIsPresent(), 5000);
+            await dismissAlerts(); // Dismiss "Registration successful" alert
+        } catch (e) {
+            console.log('No alert appeared after registration', e.message);
+        }
 
         // 4. Switch to Login (if not auto-switched)
         try {
@@ -145,8 +149,12 @@ describe('Deployable Status', function() {
         // Submit Register
         const submitBtn = await global.driver.findElement(By.xpath('//button[contains(text(), "Sign Up")]'));
         await submitBtn.click();
-        await global.driver.sleep(1000);
-        await dismissAlerts(); // Dismiss alert
+        try {
+            await global.driver.wait(until.alertIsPresent(), 5000);
+            await dismissAlerts(); // Dismiss alert
+        } catch (e) {
+            console.log('No alert appeared after registration', e.message);
+        }
 
         // 4. Switch to Login (if not auto-switched)
         try {

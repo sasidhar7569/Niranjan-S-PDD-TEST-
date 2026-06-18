@@ -14,7 +14,13 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify({ name: 'Test User', email: 'test@example.com' }));
       localStorage.setItem('userName', 'Test User');
       localStorage.setItem('role', 'student');
-      navigate('/home', { replace: true });
+      
+      const hasSetup = localStorage.getItem('targetCompanies');
+      if (!hasSetup) {
+        navigate('/setup', { replace: true });
+      } else {
+        navigate('/home', { replace: true });
+      }
     }
   }, [navigate]);
 
@@ -73,15 +79,30 @@ const Login = () => {
       }
 
       if (authMode === 'login') {
+        localStorage.removeItem('firstName');
+        localStorage.removeItem('lastName');
+        localStorage.removeItem('phone');
+        localStorage.removeItem('profilePic');
+        
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.data));
         localStorage.setItem('userName', data.data.name);
+        localStorage.setItem('email', data.data.email);
         localStorage.setItem('role', data.role);
 
         if (data.role === 'admin') {
           navigate('/admin');
         } else {
-          navigate('/home');
+          const hasSetup = localStorage.getItem('targetCompanies');
+          let parsedSetup = [];
+          if (hasSetup) {
+            try { parsedSetup = JSON.parse(hasSetup); } catch(e) {}
+          }
+          if (!hasSetup || !Array.isArray(parsedSetup) || parsedSetup.length === 0) {
+            navigate('/setup');
+          } else {
+            navigate('/home');
+          }
         }
       } else {
         alert('Registration successful. Please login now.');

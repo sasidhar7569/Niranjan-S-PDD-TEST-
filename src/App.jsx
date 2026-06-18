@@ -8,7 +8,6 @@ import HomeDashboard from './screens/HomeDashboard';
 import PreparationModule from './screens/PreparationModule';
 import CodingDashboard from './screens/CodingDashboard';
 import CodeEditor from './screens/CodeEditor';
-import MockTestHome from './screens/MockTestHome';
 import CompanyBrowser from './screens/CompanyBrowser';
 import CareerTools from './screens/CareerTools';
 import EvergreenJobs from './screens/EvergreenJobs';
@@ -19,11 +18,11 @@ import Roadmap from './screens/Roadmap';
 // New Screens
 import TopicDetail from './screens/TopicDetail';
 import CompanyDetail from './screens/CompanyDetail';
-import QuizInterface from './screens/QuizInterface';
 import PerformanceReport from './screens/PerformanceReport';
 import AdminDashboard from './screens/AdminDashboard';
 import ResumeBuilderChat from './screens/ResumeBuilderChat';
 import ATSChecker from './screens/ATSChecker';
+import Bookmarks from './screens/Bookmarks';
 
 const App = () => {
   useEffect(() => {
@@ -50,7 +49,6 @@ const App = () => {
         <Route path="/setup" element={<SetupWizard />} />
 
         {/* Full Screen / Special Layouts */}
-        <Route path="/quiz/:id" element={<QuizInterface />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
 
         {/* Main Web App */}
@@ -59,9 +57,9 @@ const App = () => {
           <Route path="/performance" element={<PerformanceReport />} />
           <Route path="/preparation" element={<PreparationModule />} />
           <Route path="/topic/:id" element={<TopicDetail />} />
+          <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/coding" element={<CodingDashboard />} />
           <Route path="/coding/editor/:id" element={<CodeEditor />} />
-          <Route path="/tests" element={<MockTestHome />} />
           <Route path="/companies" element={<CompanyBrowser />} />
           <Route path="/company/:id" element={<CompanyDetail />} />
           <Route path="/roadmap" element={<Roadmap />} />

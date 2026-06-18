@@ -6,14 +6,39 @@ const UserProfile = () => {
   const [profilePic, setProfilePic] = useState('');
   const fileInputRef = useRef(null);
 
-  // Form State
-  const [firstName, setFirstName] = useState('John');
-  const [lastName, setLastName] = useState('Doe');
-  const [email, setEmail] = useState('johndoe@example.com');
-  const [phone, setPhone] = useState('+91 9876543210');
+  // Helper to load initial name from local storage
+  const getInitialName = () => {
+    const f = localStorage.getItem('firstName');
+    const l = localStorage.getItem('lastName');
+    const u = localStorage.getItem('userName');
+    
+    if (f || l) return { first: f || '', last: l || '' };
+    if (u) {
+      const parts = u.trim().split(' ');
+      return { 
+        first: parts[0] || 'User', 
+        last: parts.length > 1 ? parts.slice(1).join(' ') : '' 
+      };
+    }
+    return { first: 'User', last: '' };
+  };
 
-  const [tempFirstName, setTempFirstName] = useState(firstName);
-  const [tempLastName, setTempLastName] = useState(lastName);
+  const initialName = getInitialName();
+
+  // Form State
+  const [firstName, setFirstName] = useState(initialName.first);
+  const [lastName, setLastName] = useState(initialName.last);
+  const [email, setEmail] = useState(() => {
+    try {
+      const u = JSON.parse(localStorage.getItem('user'));
+      if (u && u.email) return u.email;
+    } catch(e) {}
+    return localStorage.getItem('email') || 'example@gmail.com';
+  });
+  const [phone, setPhone] = useState(() => localStorage.getItem('phone') || '+91 0000000000');
+
+  const [tempFirstName, setTempFirstName] = useState(initialName.first);
+  const [tempLastName, setTempLastName] = useState(initialName.last);
   const [tempEmail, setTempEmail] = useState(email);
   const [tempPhone, setTempPhone] = useState(phone);
   
@@ -21,34 +46,31 @@ const UserProfile = () => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '']);
   const [isLightMode, setIsLightMode] = useState(false);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [showCompanyPicker, setShowCompanyPicker] = useState(false);
+
+  const availableCompanies = [
+    'Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 
+    'TCS', 'Infosys', 'Wipro', 'Cognizant', 'Accenture',
+    'Goldman Sachs', 'Morgan Stanley', 'JPMorgan', 'Bloomberg'
+  ];
 
   useEffect(() => {
     const savedPic = localStorage.getItem('profilePic');
     if (savedPic) setProfilePic(savedPic);
 
-    const savedFirstName = localStorage.getItem('firstName');
-    const savedLastName = localStorage.getItem('lastName');
-    const savedEmail = localStorage.getItem('email');
-    const savedPhone = localStorage.getItem('phone');
 
-    if (savedFirstName) {
-      setFirstName(savedFirstName);
-      setTempFirstName(savedFirstName);
-    }
-    if (savedLastName) {
-      setLastName(savedLastName);
-      setTempLastName(savedLastName);
-    }
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setTempEmail(savedEmail);
-    }
-    if (savedPhone) {
-      setPhone(savedPhone);
-      setTempPhone(savedPhone);
-    }
     
     setIsLightMode(localStorage.getItem('theme') === 'light');
+
+    const savedCompanies = localStorage.getItem('targetCompanies');
+    if (savedCompanies) {
+      try {
+        setSelectedCompanies(JSON.parse(savedCompanies));
+      } catch (e) {
+        // Handle invalid JSON
+      }
+    }
   }, []);
 
   const handlePhotoUpload = (e) => {
@@ -130,7 +152,7 @@ const UserProfile = () => {
                 <img src={profilePic} alt="Profile" className="w-24 h-24 rounded-full object-cover border-4 border-primary/20" />
               ) : (
                 <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold shadow-sm" style={{ background: 'var(--gradient-primary)', color: 'white' }}>
-                  JD
+                  {(`${firstName?.charAt(0) || ''}`.toUpperCase()) || 'U'}
                 </div>
               )}
               <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -270,22 +292,78 @@ const UserProfile = () => {
             {activeTab === 'companies' && (
               <div className="animate-fade-in">
                 <h3 className="text-xl font-bold mb-6 border-b border-slate-700 pb-4">Target Companies</h3>
-                <p className="text-secondary mb-6">Manage the list of companies you are focusing on for placements. This will tailor your mock tests and study materials.</p>
-                <div className="flex flex-wrap gap-3 mb-8">
-                  {['Google', 'Microsoft', 'Amazon'].map(comp => (
-                    <div key={comp} className="px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary flex items-center gap-2">
+                <p className="text-secondary mb-6">Manage the list of companies you are focusing on for placements. This will tailor your mock tests and study materials (Max 5).</p>
+                
+                {/* Selected Companies Display */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  {selectedCompanies.map(comp => (
+                    <div key={comp} className="px-4 py-2 rounded-full bg-primary text-white border border-primary shadow-md flex items-center gap-2">
                       <Building size={16} /> {comp}
+                      <button 
+                        onClick={() => {
+                          const newSelected = selectedCompanies.filter(c => c !== comp);
+                          setSelectedCompanies(newSelected);
+                          localStorage.setItem('targetCompanies', JSON.stringify(newSelected));
+                          window.dispatchEvent(new Event('targetCompaniesUpdated'));
+                        }}
+                        className="ml-2 hover:text-red-300"
+                      >
+                        <X size={14} />
+                      </button>
                     </div>
                   ))}
-                  {['TCS', 'Infosys'].map(comp => (
-                    <div key={comp} className="px-4 py-2 rounded-full bg-slate-800 text-textMuted border border-slate-700 flex items-center gap-2">
-                      <Building size={16} /> {comp}
-                    </div>
-                  ))}
-                  <button className="px-4 py-2 rounded-full border border-dashed border-slate-600 text-secondary hover:text-textMain hover:border-slate-400 transition-colors">
-                    + Add Company
-                  </button>
+                  {selectedCompanies.length < 5 && !showCompanyPicker && (
+                    <button 
+                      className="px-4 py-2 rounded-full border border-dashed border-slate-600 text-secondary hover:text-textMain hover:border-slate-400 transition-colors flex items-center gap-2"
+                      onClick={() => setShowCompanyPicker(true)}
+                    >
+                      + Add Company
+                    </button>
+                  )}
                 </div>
+                <p className="text-sm text-secondary mb-8">{selectedCompanies.length}/5 Selected</p>
+
+                {/* Company Picker */}
+                {showCompanyPicker && (
+                  <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 animate-fade-in">
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="font-bold text-lg">Select Dream Companies</h4>
+                      <button className="text-secondary hover:text-white" onClick={() => setShowCompanyPicker(false)}>
+                        <X size={20} />
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {availableCompanies.map(comp => {
+                        const isSelected = selectedCompanies.includes(comp);
+                        return (
+                          <button
+                            key={comp}
+                            onClick={() => {
+                              let newSelected = [...selectedCompanies];
+                              if (isSelected) {
+                                newSelected = newSelected.filter(c => c !== comp);
+                              } else if (newSelected.length < 5) {
+                                newSelected.push(comp);
+                              }
+                              setSelectedCompanies(newSelected);
+                              localStorage.setItem('targetCompanies', JSON.stringify(newSelected));
+                              // Dispatch event so other components can react if needed
+                              window.dispatchEvent(new Event('targetCompaniesUpdated'));
+                            }}
+                            className={`px-4 py-2 rounded-full border transition-all flex items-center gap-2 ${
+                              isSelected 
+                              ? 'bg-primary text-white border-primary shadow-md' 
+                              : 'bg-slate-800 text-textMuted border-slate-600 hover:border-slate-400'
+                            }`}
+                            style={{ background: isSelected ? 'var(--primary-color)' : '' }}
+                          >
+                            <Building size={16} /> {comp}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
